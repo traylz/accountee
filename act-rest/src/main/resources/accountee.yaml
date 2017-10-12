@@ -1,0 +1,3 @@
+amountPrecision: 2
+startWithInitialState: true
+initialStatePath: initial-state.json
