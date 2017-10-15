@@ -1,75 +1,58 @@
 package com.gsobko.act;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
-import com.google.common.io.Resources;
+import com.google.inject.Stage;
 import com.gsobko.act.config.AccounteeConfiguration;
-import com.gsobko.act.config.InitialState;
-import com.gsobko.act.db.AccountDao;
-import com.gsobko.act.db.Dao;
-import com.gsobko.act.db.Database;
-import com.gsobko.act.model.Account;
+import com.gsobko.act.config.AccounteeCoreModule;
+import com.gsobko.act.config.DatabaseHealhcheck;
+import com.gsobko.act.config.DatabaseModule;
 import com.gsobko.act.rest.AccountsEndpoint;
 import com.gsobko.act.rest.RuntimeExceptionMapper;
 import com.gsobko.act.rest.TransferEndpoint;
+import com.gsobko.act.rest.model.serialization.AccounteeSerializationModule;
 import io.dropwizard.Application;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-
-import java.io.IOException;
-import java.net.URL;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 
 public class AccounteeRestApp extends Application<AccounteeConfiguration> {
 
-    private final TransferManager transferManager;
-    private final AccountManager accountManager;
-    private final Database database;
+    private Environment environment;
+    private final String configFile;
 
-    public AccounteeRestApp(TransferManager transferManager, AccountManager accountManager, Database database) {
-        this.transferManager = transferManager;
-        this.accountManager = accountManager;
-        this.database = database;
+    public AccounteeRestApp() {
+        this("accountee.yaml");
     }
+
+    public AccounteeRestApp(String configFile) {
+        this.configFile = configFile;
+    }
+
 
     @Override
     public void initialize(Bootstrap<AccounteeConfiguration> bootstrap) {
         bootstrap.setConfigurationSourceProvider(new ResourceConfigurationSourceProvider());
+        bootstrap.addBundle(GuiceBundle.<AccounteeConfiguration>builder()
+                .modules(new DatabaseModule(), new AccounteeCoreModule())
+                .extensions(AccountsEndpoint.class, TransferEndpoint.class,
+                        RuntimeExceptionMapper.class, DatabaseHealhcheck.class)
+                .build(Stage.PRODUCTION));
     }
 
     @Override
     public void run(AccounteeConfiguration accounteeConfiguration, Environment environment) throws Exception {
-        environment.jersey().register(new RuntimeExceptionMapper());
-        environment.jersey().register(new TransferEndpoint(transferManager));
-        environment.jersey().register(new AccountsEndpoint(accountManager));
         ObjectMapper objectMapper = environment.getObjectMapper();
-
-        if (accounteeConfiguration.getStartWithInitialState()) {
-            createInitialState(accounteeConfiguration.getInitialStateUri(), objectMapper);
-        }
-    }
-
-    private void createInitialState(String initialStateUri, ObjectMapper objectMapper) {
-        URL resource = Resources.getResource(initialStateUri);
-        try {
-            InitialState initialState = objectMapper.readValue(resource, InitialState.class);
-
-            database.doInTransaction(
-                    connection -> {
-                        Dao<Long, Account> accountDao = connection.getDao(AccountDao.class);
-                        for (InitialState.Account account : initialState.getAccounts()) {
-                            accountDao.create(new Account(null, account.getAmount()));
-                        }
-                        return null;
-                    }
-            );
-
-        } catch (IOException e) {
-            Throwables.propagate(e);
-        }
+        objectMapper.registerModule(AccounteeSerializationModule.create());
+        this.environment = environment;
     }
 
     public void runAsServer() throws Exception {
-        run("server", "accountee.yaml");
+        run("server", configFile);
+    }
+
+    public void stop() throws Exception {
+        environment.getApplicationContext().getServer().stop();
     }
 }

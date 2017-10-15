@@ -1,3 +1,18 @@
-amountPrecision: 2
-startWithInitialState: true
-initialStatePath: initial-state.json
+server:
+  applicationContextPath: /   # this is root path for app. Can be changed to e.g. /rest
+  applicationConnectors:
+    - type: http
+      port: 8080              # port
+  adminConnectors: []         # disable admin connectors, but this has some pretty cool features
+
+database:
+  type: H2                    # H2 or TEST
+  initialSql:                 # Sqls to exec on startup. Compatible with H2 only
+    - CREATE TABLE account(ID INT AUTO_INCREMENT (1) PRIMARY KEY, AMOUNT DECIMAL);
+    - CREATE TABLE transfer(ID VARCHAR(255) PRIMARY KEY, AMOUNT DECIMAL, FROMID INT, TOID INT);
+
+
+initialState:                 # initial state
+  initialAccounts:
+    - amount: 1000000
+    - amount: 2000000

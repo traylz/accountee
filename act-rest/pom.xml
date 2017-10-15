@@ -25,11 +25,32 @@
             <version>${dropwizard.version}</version>
         </dependency>
 
+        <!-- Simple in-memory database -->
         <dependency>
             <groupId>com.gsobko</groupId>
             <artifactId>act-database-simple4test-im</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
+        <!-- JDBC database -->
+        <dependency>
+            <groupId>com.gsobko</groupId>
+            <artifactId>act-database-h2</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.196</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>1.1.7</version>
+        </dependency>
+
+
         <dependency>
             <groupId>com.gsobko</groupId>
             <artifactId>act-core</artifactId>
@@ -40,5 +61,18 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.vyarus</groupId>
+            <artifactId>dropwizard-guicey</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
     </dependencies>
 </project>

@@ -29,7 +29,5 @@ public interface Dao<K, E extends Entity<K>> {
 
     void delete(K byKey);
 
-    void truncate();
-
     Collection<E> getAll();
 }

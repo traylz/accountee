@@ -1,19 +1,16 @@
 package com.gsobko.act.rest;
 
+import com.google.inject.Inject;
 import com.gsobko.act.AccountManager;
-import com.gsobko.act.TransferManager;
-import com.gsobko.act.TransferManagerImpl;
 import com.gsobko.act.model.Account;
-import com.gsobko.act.rest.model.CreateAccountRequest;
-import com.gsobko.act.rest.model.TransferRequest;
-import com.gsobko.act.rest.model.TransferResponse;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -24,6 +21,7 @@ public class AccountsEndpoint {
 
     private final AccountManager accountManager;
 
+    @Inject
     public AccountsEndpoint(AccountManager accountManager) {
         this.accountManager = accountManager;
     }
@@ -35,13 +33,21 @@ public class AccountsEndpoint {
         return accountManager.allAccounts().stream().sorted(Comparator.comparing(Account::getKey)).collect(Collectors.toList());
     }
 
+    @GET
+    @Path("/{id}")
+    public Response getAccount(@PathParam("id") Long id) {
+        Optional<Account> account = accountManager.findAccount(id);
+        if (!account.isPresent()) {
+            return Response.status(404).entity("No account found for id = " + id).build();
+        }
+        return Response.ok(account.get(), MediaType.APPLICATION_JSON_TYPE).build();
+    }
 
-    // Remove this
+
     @POST
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Account createAccount(CreateAccountRequest request) {
+    public Account createAccount(Account request) {
         return accountManager.createAccount(request.getAmount());
     }
 

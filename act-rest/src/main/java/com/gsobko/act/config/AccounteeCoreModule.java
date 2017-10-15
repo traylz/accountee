@@ -6,6 +6,9 @@ import com.gsobko.act.AccountManagerImpl;
 import com.gsobko.act.TransferManager;
 import com.gsobko.act.TransferManagerImpl;
 import com.gsobko.act.db.Database;
+import com.gsobko.act.rest.AccountsEndpoint;
+import com.gsobko.act.rest.RuntimeExceptionMapper;
+import com.gsobko.act.rest.TransferEndpoint;
 
 public class AccounteeCoreModule extends AbstractModule {
     @Override

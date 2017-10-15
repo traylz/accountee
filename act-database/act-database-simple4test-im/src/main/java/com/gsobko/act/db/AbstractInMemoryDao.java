@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 //@NotThreadSafe
 abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> {
@@ -13,25 +14,25 @@ abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> 
     private Map<K, E> state;
     private Map<K, E> stateCandidate;
 
-    public AbstractInMemoryDao() {
+    protected AbstractInMemoryDao() {
         this.state = ImmutableMap.of();
     }
 
     @Override
     public Optional<E> find(K byKey) {
-        return Optional.ofNullable(getState().get(byKey));
+        return Optional.ofNullable(getState().get(byKey)).map(this::cloneEntity);
     }
 
     @Override
     public Optional<E> findForUpdate(K byKey) {
-        return Optional.ofNullable(getStateToModify().get(byKey));
+        return Optional.ofNullable(getStateToModify().get(byKey)).map(this::cloneEntity);
     }
 
     @Override
     public E update(E entity) {
         checkEntityExists(entity.getKey());
         getStateToModify().put(entity.getKey(), entity);
-        return entity;
+        return cloneEntity(entity);
     }
 
     @Override
@@ -46,7 +47,7 @@ abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> 
             throw new DuplicateKeyViolationException("Entity with key " + entity.getKey() + " already exists");
         }
         getStateToModify().put(entity.getKey(), entity);
-        return entity;
+        return cloneEntity(entity);
     }
 
     @Override
@@ -56,13 +57,12 @@ abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> 
     }
 
     @Override
-    public void truncate() {
-        stateCandidate = ImmutableMap.of();
+    public Collection<E> getAll() {
+        return getState().values().stream().map(this::cloneEntity).collect(Collectors.toList());
     }
 
-    @Override
-    public Collection<E> getAll() {
-        return getState().values();
+    private E cloneEntity(E ent) {
+        return (E) ent.clone();
     }
 
     protected abstract boolean isSequencedKey();
@@ -84,6 +84,7 @@ abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> 
         if (stateCandidate != null) {
             state = ImmutableMap.copyOf(stateCandidate);
         }
+        stateCandidate = null;
     }
 
     private Map<K, E> getState() {
@@ -97,7 +98,7 @@ abstract class AbstractInMemoryDao<K, E extends Entity<K>> implements Dao<K, E> 
         if (stateCandidate == null) {
             stateCandidate = new HashMap<>();
             for (E entityToCopy : state.values()) {
-                E clone = (E) entityToCopy.clone();
+                E clone = cloneEntity(entityToCopy);
                 stateCandidate.put(clone.getKey(), clone);
             }
         }

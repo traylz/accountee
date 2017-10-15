@@ -6,6 +6,7 @@ import com.gsobko.act.model.Account;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Optional;
 
 public class AccountManagerImpl implements AccountManager {
 
@@ -19,6 +20,12 @@ public class AccountManagerImpl implements AccountManager {
     public Account createAccount(BigDecimal initialAmount) {
         return database.doInTransaction(connection ->
                 connection.getDao(AccountDao.class).create(new Account(null, initialAmount)));
+    }
+
+    @Override
+    public Optional<Account> findAccount(Long id) {
+        return database.doInTransaction(connection ->
+                connection.getDao(AccountDao.class).find(id));
     }
 
     @Override
