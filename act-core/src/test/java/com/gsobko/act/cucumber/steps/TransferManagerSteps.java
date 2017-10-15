@@ -4,15 +4,12 @@ import com.google.inject.Inject;
 import com.gsobko.act.TransferManager;
 import com.gsobko.act.cucumber.TestScenarioScope;
 import com.gsobko.act.model.Transfer;
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class TransferManagerSteps {
     @Inject

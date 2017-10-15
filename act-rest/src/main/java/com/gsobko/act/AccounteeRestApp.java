@@ -14,8 +14,10 @@ import io.dropwizard.Application;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
-import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 
 public class AccounteeRestApp extends Application<AccounteeConfiguration> {
 
@@ -50,6 +52,19 @@ public class AccounteeRestApp extends Application<AccounteeConfiguration> {
 
     public void runAsServer() throws Exception {
         run("server", configFile);
+    }
+
+    public int getPort() {
+        Server server = environment.getApplicationContext().getServer();
+        for (Connector connector : server.getConnectors()) {
+            if (connector instanceof ServerConnector) {
+                ServerConnector serverConnector = (ServerConnector) connector;
+                serverConnector.getTransport();
+                return serverConnector.getLocalPort();
+            }
+        }
+        throw new UnsupportedOperationException("Cannot get port, as connector type is unknown");
+
     }
 
     public void stop() throws Exception {

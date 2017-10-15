@@ -2,7 +2,6 @@ package com.gsobko.act.cucumber.steps;
 
 import com.google.inject.Inject;
 import com.gsobko.act.db.AccountDao;
-import com.gsobko.act.db.AccountDaoImpl;
 import com.gsobko.act.db.Database;
 import com.gsobko.act.model.Account;
 import cucumber.api.DataTable;

@@ -9,7 +9,6 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import ru.vyarus.dropwizard.guice.module.support.DropwizardAwareModule;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 
 public class DatabaseModule extends DropwizardAwareModule<AccounteeConfiguration> {
     @Override
@@ -20,7 +19,7 @@ public class DatabaseModule extends DropwizardAwareModule<AccounteeConfiguration
         if (databaseType == DatabaseType.TEST) {
             database = new SimpleInMemoryDatabaseImpl();
         } else if (databaseType == DatabaseType.H2) {
-            DataSource ds = initDatasource(dbConfig.getJdbcUrl());
+            DataSource ds = initDatasource();
             JdbcDatabase jdbcDatabase = new JdbcDatabase(ds);
             if (dbConfig.getInitialSql() != null) {
                 jdbcDatabase.execute(dbConfig.getInitialSql());
@@ -41,10 +40,9 @@ public class DatabaseModule extends DropwizardAwareModule<AccounteeConfiguration
 
     }
 
-    private DataSource initDatasource(String jdbcUrl) {
-        JdbcConnectionPool cp = JdbcConnectionPool.
+    private DataSource initDatasource() {
+        return JdbcConnectionPool.
                 create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "sa");
-        return cp;
     }
 
 }

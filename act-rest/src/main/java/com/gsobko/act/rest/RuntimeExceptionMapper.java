@@ -1,12 +1,9 @@
 package com.gsobko.act.rest;
 
 import com.gsobko.act.ActUserException;
-import com.gsobko.act.db.DaoExcepton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

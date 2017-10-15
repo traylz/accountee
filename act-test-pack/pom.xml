@@ -13,7 +13,6 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.gsobko</groupId>
     <artifactId>act-test-pack</artifactId>
     <version>1.0-SNAPSHOT</version>
 

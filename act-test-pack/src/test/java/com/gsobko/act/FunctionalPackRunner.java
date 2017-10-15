@@ -11,17 +11,4 @@ import org.junit.runner.RunWith;
         features = "classpath:features", glue={"com.gsobko.act.steps"}
 )
 public class FunctionalPackRunner {
-
-    private static AccounteeRestApp accounteeRestApp;
-
-    @BeforeClass
-    public static void setUp() throws Exception {
-        accounteeRestApp = new AccounteeRestApp();
-        accounteeRestApp.runAsServer();
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        accounteeRestApp.stop();
-    }
 }

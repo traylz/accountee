@@ -19,11 +19,30 @@
 
 
     <dependencies>
+
+        <!-- dropwizard & dropwizard-guice integration-->
         <dependency>
             <groupId>io.dropwizard</groupId>
             <artifactId>dropwizard-core</artifactId>
             <version>${dropwizard.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ru.vyarus</groupId>
+            <artifactId>dropwizard-guicey</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <!-- guice & guava -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>21.0</version>
+        </dependency>
+
 
         <!-- Simple in-memory database -->
         <dependency>
@@ -51,27 +70,11 @@
         </dependency>
 
 
+        <!-- core business logic -->
         <dependency>
             <groupId>com.gsobko</groupId>
             <artifactId>act-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>21.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ru.vyarus</groupId>
-            <artifactId>dropwizard-guicey</artifactId>
-            <version>4.1.0</version>
         </dependency>
 
     </dependencies>
