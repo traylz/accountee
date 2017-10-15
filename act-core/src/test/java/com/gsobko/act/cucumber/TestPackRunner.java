@@ -9,6 +9,6 @@ import org.junit.runner.RunWith;
         glue = "com.gsobko.act.cucumber.steps",
         features = "classpath:features"
 )
-public class FunctionalPackRunner {
+public class TestPackRunner {
 }
 
