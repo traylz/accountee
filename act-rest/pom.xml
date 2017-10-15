@@ -36,7 +36,7 @@
         <!-- JDBC database -->
         <dependency>
             <groupId>com.gsobko</groupId>
-            <artifactId>act-database-h2</artifactId>
+            <artifactId>act-database-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

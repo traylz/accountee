@@ -17,7 +17,7 @@
     <modules>
         <module>act-database-api</module>
         <module>act-database-simple4test-im</module>
-        <module>act-database-h2</module>
+        <module>act-database-jdbc</module>
         <module>act-database-model</module>
     </modules>
 
