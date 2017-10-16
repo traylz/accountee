@@ -10,27 +10,46 @@ To do a transfer from account #1 to account #2 call POST on localhost:8080/trans
 
     {"fromId" : 1, "toId" : 2, "amount" : 1000}
 
-
 ## Important notice regarding transfers
 Essential feature of transfers is idempotency - you should have some kind of protection against duplicated transfers.
 This was done by introducing transferId and transfer as entity in database.
 So, you can (and should) add transferId generated uniquely on calling side to request. This will guarantee you will not perform same transfer twice.
 Further discussed in "Why's? Explaining some decisions" section.
 
+
+## Show me code & tests!
+Ok, here you go.
+
+Method doing transfer is [here](act-core/src/main/java/com/gsobko/act/TransferManagerImpl.java)
+
+Tests showing all works as expected (these test will start server before running):act-test-pack/src/test/resources/features
+1. [Happy-path scenarios](act-test-pack/src/test/resources/features/simple-transfer.feature)
+2. [Negative scenarios](act-test-pack/src/test/resources/features/transfer-negative.feature)
+3. [Protection from duplicate transfer scenarios](act-test-pack/src/test/resources/features/double-transfer-protection.feature)
+
 ## REST API
 ### Endpoints
 1. ```transfer/```
 
     1. ```POST perform/``` This is main method to perform transfer between two accounts.
+
     Request:
 
-
-        {"fromId" : 1, "toId" : 2, "amount" : 1000}
+        {
+            "fromId" : 1,
+            "toId" : 2,
+            "amount" : 1000
+        }
 
 
     Response:
 
-        {"fromId" : 1, "toId" : 2, "amount" : 1000, "transferId" : "asdcf-vsfvsfv-sfv"}
+        {
+            "fromId" : 1,
+            "toId" : 2,
+            "amount" : 1000,
+            "transferId" : "asdcf-vsfvsfv-sfv"
+        }
 
     2. ```GET list/``` Returns list of all transfers
 
@@ -54,16 +73,12 @@ Further discussed in "Why's? Explaining some decisions" section.
     2. ```GET list/```
      Returns list of accounts
 
-
 ### Return codes & errors
-1. 200 - OK
+1. 200 OK - transfer successful
 2. 400 (Bad request) - is returned when input is invalid with some message that can be passed to user.
 3. 404 (Not found)
-4. 500 (Server error) - On some internal error. User sees
-
-
-    Internal error occurred, please contact support with reference 123135
-
+4. 500 (Server error) - On some internal error.
+User sees ```Internal error occurred, please contact support with reference 123135```
 And  error with reference 123135 is logged with stacktrace, so that sl3 can find it easily.
 
 ## Project structure
@@ -78,7 +93,12 @@ This module contains all related to rest and wiring of application.
 This module contains some e2e tests.
 
 ## Test coverage
-Some test coverage in cucumber scenarios (all plain & simple, see transfers.feature)
+
+There are tests in core module that covers core logic itself without rest api:
+[Core tests](act-core/src/test/resources/features/transfers.feature)
+
+There are tests for rest API:
+[Rest tests](act-test-pack/src/test/resources/features/)
 
 ## Technology stack
 - Guice for DI.
@@ -117,10 +137,55 @@ Cucumber - for human readable tests.
 
 ## Configuration
 ### Application configuration
-see accountee.yml
+Here's sample configuration:
+
+    server:
+      applicationContextPath: /   # this is root path for app. Can be changed to e.g. /rest
+      applicationConnectors:
+        - type: http
+          port: 8080              # port
+      adminConnectors: []         # disable admin connectors, but this has some pretty cool features
+
+    database:
+      type: H2                    # H2 or TEST
+      initialSql:                 # Sqls to exec on startup. Compatible with H2 only
+        - CREATE TABLE account(ID INT AUTO_INCREMENT (1) PRIMARY KEY, AMOUNT DECIMAL);
+        - CREATE TABLE transfer(ID VARCHAR(255) PRIMARY KEY, AMOUNT DECIMAL, FROMID INT, TOID INT);
+
+    initialState:                 # initial state
+      initialAccounts:            # accounts to create on startup
+        - amount: 1000000
+        - amount: 2000000
 
 ### Test configuration
-TBD
+Here's sample test-configuration to run in embedded mode:
+
+    embedded=true
+    config=accountee.yaml # this config will be taken to run embedded rest app
+
+Here's how to run against already started instance:
+
+    embedded=false
+    url=http://localhost:8000
 
 ## What can be improved
-TBD
+Ok, here are some stuff I skipped (as this is just test project):
+
+1. Dao full implementation for JDBC.
+Just implemented methods required for tests to pass.
+Also there is a tie to H2 error code (for duplicate code), if chance of changing db is high - would have extracted that to some "SQL Exception mapper", but now that would be an overkill.
+2. Serialization.
+There are two ways of exposing model to rest API in json -
+either expose core model (via serializers) or create separate request-response model
+(both ways are ok and actually I've implemented both - serializers fo account and request-response for Transfers),
+but I'm inclining a little to creating separate Request-Response model as more agile.
+3. Errors.
+Generally a good idea to create response object instead of just String for Errors
+(to pass User-message, reference or error code so that frontend system could show localized message).
+4. Perf test (depending on requirements to service).
+If service is going to be high-load then some perf tests would be good.
+This would allow to optimize performance (with proofs).
+E.g. I'm pretty sure that row-level locking + read committed would have a good speed up compared to table-level locking in case of high concurrency.
+5. Logging.
+This implementation is logging some info to console (incl. request without body/headers).
+So in prod-project I would improve logging: log all request with bodies, add some requestID in MDC and add to log format, so that we can link logs to one request.

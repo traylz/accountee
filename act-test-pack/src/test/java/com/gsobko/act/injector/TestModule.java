@@ -9,11 +9,11 @@ import java.util.Properties;
 
 import static cucumber.api.guice.CucumberScopes.SCENARIO;
 
-public class TestModule extends AbstractModule {
+class TestModule extends AbstractModule {
 
     private final Properties props;
 
-    public TestModule(Properties props) {
+    TestModule(Properties props) {
 
         this.props = props;
     }
@@ -23,10 +23,9 @@ public class TestModule extends AbstractModule {
 
         String url;
         if (props.getProperty("embedded", "true").equals("true")) {
-            AccounteeRestApp accounteeRestApp = new AccounteeRestApp();
+            AccounteeRestApp accounteeRestApp = new AccounteeRestApp(props.getProperty("config"));
             try {
                 accounteeRestApp.runAsServer();
-
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
