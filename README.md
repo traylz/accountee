@@ -1,4 +1,6 @@
 # Test task
+[![Build Status](https://travis-ci.org/traylz/accountee.svg?style=flat&branch=master)](https://travis-ci.org/traylz/accountee)
+
 So, I've called it accountee (short version is act).
 
 ## How to run
