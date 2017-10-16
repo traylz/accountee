@@ -1,4 +1,4 @@
-Feature: Protection from double transfer
+Feature: Protection from duplicate transfers
 
   Background:
     Given account acc1 with initial amount 1000 is created
@@ -9,8 +9,8 @@ Feature: Protection from double transfer
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "100",
       "transferId" : "${transferId1}"
     }
@@ -22,8 +22,8 @@ Feature: Protection from double transfer
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "100",
       "transferId" : "${transferId1}"
     }
@@ -41,8 +41,8 @@ Feature: Protection from double transfer
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "1000",
       "transferId" : "${transferId1}"
     }
@@ -54,8 +54,8 @@ Feature: Protection from double transfer
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "1000",
       "transferId" : "${transferId1}"
     }

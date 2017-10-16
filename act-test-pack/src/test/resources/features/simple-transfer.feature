@@ -8,8 +8,8 @@ Feature: Create account
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "100"
     }
     """
@@ -21,8 +21,8 @@ Feature: Create account
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "100"
     }
     """
@@ -30,8 +30,8 @@ Feature: Create account
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc2}",
-      "toId"   : "${acc1}",
+      "fromId" : ${acc2},
+      "toId"   : ${acc1},
       "amount" : "100"
     }
     """
@@ -43,8 +43,8 @@ Feature: Create account
     When user calls POST /transfer/perform with following body:
     """
     {
-      "fromId" : "${acc1}",
-      "toId"   : "${acc2}",
+      "fromId" : ${acc1},
+      "toId"   : ${acc2},
       "amount" : "1000"
     }
     """
