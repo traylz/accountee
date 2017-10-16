@@ -84,7 +84,9 @@ And  error with reference 123135 is logged with stacktrace, so that sl3 can find
 ## Project structure
 Project consists of 4 modules (Yeah, more modules to the god of modules :) Reasoning discussed in "Why's section") :
 1. act-database.
-This module contains database-api & model + two implementations - #1 is simple in-memory for testing; #2 is JDBC based.
+This module contains
+database-api & model
++ two implementations - #1 is simple in-memory for testing; #2 is JDBC based.
 2. act-core.
 This module contains all business logic.
 3. act-rest
@@ -97,8 +99,11 @@ This module contains some e2e tests.
 There are tests in core module that covers core logic itself without rest api:
 [Core tests](act-core/src/test/resources/features/transfers.feature)
 
-There are tests for rest API:
+There are tests for rest API (E2E), that starts server and run agains it:
 [Rest tests](act-test-pack/src/test/resources/features/)
+
+There are also unit tests:
+[Unit tests for TransferManagerImpl](act-core/src/test/java/com/gsobko/act/TransferManagerImplTest.java)
 
 ## Technology stack
 - Guice for DI.
@@ -111,10 +116,9 @@ There are tests for rest API:
 
 To cover points of variability.
 There are three distinct layers of application:
-- Storage (act-database)
-- Business logic layer (act-core)
-- Transport + API layer (act-rest)
-- e2e tests
+- Storage (act-database). Storage may change. In this project this would mean just implementing API methods for new Database.
+- Business logic layer (act-core). This is where all business-related changes should be done
+- Transport + API layer (act-rest). This also may change (or another transport may add in addition - grpc/jms etc...)
 
 ### Why using Guice/Dropwizard/H2/Cucumber?
 
@@ -123,13 +127,15 @@ Guice - keeping in mind requirement to avoid Spring I've stopped at guice as mos
 Dropwizard - I was planning to use Jersey & Jetty - that's all bundled in Dropwizard (along with Jackson).
 Also found pretty good module for Guice integration
 
-H2 - supports memory mode
+H2 - supports memory mode + embeddable
 
 Cucumber - for human readable tests.
 
 ### Why adding transfer entity to app?
-1. Transfers shouldn't be done twice in case of network glitch.
-2. Retry of transfer message should be safe.
+Taking into consideration http is not reliable transport (not durable) we may find ourselves in situation when transfer operation timed-out due to network glitch.
+In this situation we wouldn't know if transfer was done or not. Can we retry? How can we check if transaction was done?
+If there is no Transfer entity these questions would stay unanswered.
+So, adding transfer would allow us to retry transfer in case of server timeout and also we will have log of all transfers.
 
 ### How avoiding deadlocks and guaranteeing consistency?
 1. Locking resources in order: transaction -> two accounts (ordered by primary key).

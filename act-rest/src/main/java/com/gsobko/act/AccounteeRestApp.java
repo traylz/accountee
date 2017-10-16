@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Stage;
 import com.gsobko.act.config.AccounteeConfiguration;
 import com.gsobko.act.config.AccounteeCoreModule;
-import com.gsobko.act.config.DatabaseHealhcheck;
+import com.gsobko.act.config.DatabaseHealthcheck;
 import com.gsobko.act.config.DatabaseModule;
 import com.gsobko.act.rest.AccountsEndpoint;
 import com.gsobko.act.rest.RuntimeExceptionMapper;
@@ -39,7 +39,7 @@ public class AccounteeRestApp extends Application<AccounteeConfiguration> {
         bootstrap.addBundle(GuiceBundle.<AccounteeConfiguration>builder()
                 .modules(new DatabaseModule(), new AccounteeCoreModule())
                 .extensions(AccountsEndpoint.class, TransferEndpoint.class,
-                        RuntimeExceptionMapper.class, DatabaseHealhcheck.class)
+                        RuntimeExceptionMapper.class, DatabaseHealthcheck.class)
                 .build(Stage.PRODUCTION));
     }
 

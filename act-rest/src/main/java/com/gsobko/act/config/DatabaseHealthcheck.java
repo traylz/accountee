@@ -7,12 +7,12 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthChe
 
 import static jersey.repackaged.com.google.common.collect.ImmutableList.of;
 
-public class DatabaseHealhcheck extends NamedHealthCheck {
+public class DatabaseHealthcheck extends NamedHealthCheck {
 
     private final Database database;
 
     @Inject
-    public DatabaseHealhcheck(Database database) {
+    public DatabaseHealthcheck(Database database) {
         this.database = database;
     }
 
